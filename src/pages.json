@@ -19,21 +19,21 @@
 			}
 		},
 		{
-			"path": "pages/index/index",
+			"path": "pages/video/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "精美视频"
 			}
 		},
 		{
-			"path": "pages/index/index",
+			"path": "pages/search/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "搜索"
 			}
 		},
 		{
-			"path": "pages/index/index",
+			"path": "pages/mine/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
