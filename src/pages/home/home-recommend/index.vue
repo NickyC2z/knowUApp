@@ -15,8 +15,8 @@
       <view class="moneths_title">
         <view class="moneths_title_info">
           <view class="moneths_info">
-            <text>18/</text>
-            01 月
+            <text>{{monthes.DD}}/</text>
+            {{monthes.MM}} 月
           </view>
           <view class="moneths_text">你负责美丽就好</view>
         </view>
@@ -29,11 +29,15 @@
 </template>
 
 <script>
+import moment from "moment";
 export default {
   data(){
     return{
       //推荐列表
-      recommends:[]
+      recommends:[],
+      //月份
+      monthes:{
+      }
     }
   },
   mounted(){
@@ -50,7 +54,14 @@ export default {
     })
     .then(result=>{
       console.log(result);
+      //推荐模块
       this.recommends=result.res.homepage[1].items;
+      //月份模块
+      this.monthes= result.res.homepage[2];
+      //将时间戳修改 moment.js
+      this,monthes.MM=moment(this.monthes.stime).format("MM");
+      this,monthes.DD=moment(this.monthes.stime).format("DD");
+      console.log(this.monthes);
     })
   }
 }

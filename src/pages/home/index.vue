@@ -84,4 +84,4 @@ export default {
   }
 }
 
-</style>
+</style>C:\Users\Administrator\Desktop\PhotoSearch\knowUApp\src\pages\home\index.vue
