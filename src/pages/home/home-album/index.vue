@@ -15,9 +15,9 @@ export default {
   },
   mounted(){
     //修改页面的标题
-    uni.setnavigationBarTitle({title:"专辑"})
-    this.getList
-  },
+    uni.setNavigationBarTitle({title:"专辑"})
+    this.getList();
+    },
   methods:{
     //获取接口的数据
     getList(){
@@ -29,7 +29,7 @@ export default {
         console.log(result);
       })
     }
-  }
+  },
 }
 </script>
 
