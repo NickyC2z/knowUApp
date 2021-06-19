@@ -33,7 +33,7 @@
 
 
 <script>
- import homeAlbum from "./home-album";
+ import {homeAlbum} from "./home-album";
  import homeCategory from "./home-category";
  import homeNew from "./home-new";
  import homeRecommend from "./home-recommend";
@@ -54,7 +54,7 @@ export default {
         {title:"最新"},
         {title:"专辑"}
       ],
-      current: 0
+      current: 3
     };
   },
   methods:{
