@@ -28,12 +28,13 @@
     <!-- 轮播图结束 -->
     <!-- 列表开始 -->
     <view class="album_list">
-      <view class="album_item"
+      <navigator class="album_item"
       v-for="item in album"
       :key="item.id"
+      :url="`/pages/album/index?id=${item.id}`"
       >
         <view class="album_image">
-          <image :src="item.cover" ></image>
+          <image mode="aspectFill" :src="item.cover" ></image>
         </view>
         <view class="album_info">
           <view class="album_name">{{item.name}}</view>
@@ -42,7 +43,7 @@
             <view class="album_attention">关注</view>
           </view>
         </view>
-      </view>
+      </navigator>
     </view>
     <!-- 列表结束 -->
   </scroll-view>
@@ -55,7 +56,10 @@ export default {
       params:{
         limit:30,
         order:"new",
-        skip:0
+        skip:0,
+        //当值为1时 返回值中有album对象 表示第一次请求数据
+        //当值为0时 返回之中只有wallpaper数组 表示不是第一次请求数据
+        first:1
       },
       //轮播图数字
       banner:[],
@@ -78,6 +82,7 @@ export default {
         data:this.params
       })
       .then(result=>{
+        console.log(result)
         if(this.banner.length===0){
           this.banner = result.res.banner;
         }
