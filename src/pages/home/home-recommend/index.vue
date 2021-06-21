@@ -25,10 +25,12 @@
       </view>
       <view class="monthes_content">
         <view class="monthes_item"
-        v-for="item in monthes.items"
+        v-for="(item,index) in monthes.items"
         :key="item.id"
         >
+        <go-detail :list="monthes.items" :index="index">
           <image mode="aspectFill" :src="item.thumb+item.rule.replace('$<Height>',360)" ></image>
+        </go-detail>
         </view>
       </view>
     </view>
@@ -41,10 +43,12 @@
       <view class="hots_content">
         <view 
         class="hot_item"
-        v-for="item in hots"
+        v-for="(item,index) in hots"
         :key="item.id"
         >
-          <image mode="widthFix" :src="item.thumb"></image>
+          <go-detail :list="hots" :index="index">
+           <image mode="widthFix" :src="item.thumb"></image>
+          </go-detail>
         </view>
       </view>
     </view>
@@ -53,9 +57,14 @@
 </template>
 
 <script>
+import goDetail from"@/components/goDetail";
 import moment from "moment";
 export default {
-  data(){
+  components:{
+    goDetail
+  },
+  data(
+    GoDetail){
     return{
       //推荐列表
       recommends:[],
@@ -85,7 +94,7 @@ export default {
     getList(){
       this.request({
         
-      url:"http://service.picasso.adesk.com/v3/homepage/vertical",
+      url:"http://157.122.54.189:9088/image/v3/homepage/vertical",
       data:this.params,
     })
     .then(result=>{

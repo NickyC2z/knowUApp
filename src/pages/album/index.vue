@@ -23,10 +23,12 @@
     <!-- 列表开始 -->
     <view class="album_list">
       <view class="album_item"
-      v-for="item in wallpaper"
+      v-for="(item,index) in wallpaper"
       :key="item.id"
       >
-        <image mode="widthFix" :src="item.thumb+item.rule.replace('$<Height>',360)"></image>
+        <go-detail :list="wallpaper" :index="index">
+          <image mode="widthFix" :src="item.thumb+item.rule.replace('$<Height>',360)"></image>
+        </go-detail>
       </view>
     </view>
     <!-- 列表结束 -->
@@ -34,7 +36,9 @@
 </template>
 
 <script>
+import goDetail from "@/components/goDetail";
 export default {
+  components:{goDetail},
   data(){
     return{
       params:{
@@ -50,8 +54,10 @@ export default {
     }
   },
   onLoad(options){
-    this.id=options.id;
+    //this.id=options.id;
+    this.id="5d5f8e45e7bce75ae7fb8278";
     this.getList();
+
   },
   //页面触底 = 上拉加载下一页
   onReachBottom(){
@@ -71,7 +77,7 @@ export default {
   methods:{
     getList(){
       this.request({
-        url:`http://service.picasso.adesk.com/v1/wallpaper/album/${this.id}/wallpaper`,
+        url:`http://157.122.54.189:9088/image/v1/wallpaper/album/${this.id}/wallpaper`,
         data:this.params
       })
       .then(result=>{

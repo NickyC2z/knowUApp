@@ -78,8 +78,8 @@ export default {
     //获取接口的数据
     getList(){
       this.request({
-        
-        url:"http://service.picasso.adesk.com/v1/wallpaper/album",
+
+        url:"http://157.122.54.189:9088/image/v1/wallpaper/album",
         data:this.params
       })
       .then(result=>{
