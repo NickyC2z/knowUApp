@@ -78,7 +78,8 @@ export default {
     //获取接口的数据
     getList(){
       this.request({
-        url:"https://service.picasso.adesk.com/v1/wallpaper/album",
+        
+        url:"http://service.picasso.adesk.com/v1/wallpaper/album",
         data:this.params
       })
       .then(result=>{
@@ -88,6 +89,10 @@ export default {
         }
         if(result.res.album.length===0){
           this.hasMore=false;
+          uni.showToast({
+            title:"没有更多数据了",
+            icon:"none"
+          })
           return;
         }
         this.album=[...this.album,...result.res.album];

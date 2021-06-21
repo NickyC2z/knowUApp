@@ -9,6 +9,27 @@
       </view>
     </view>
     <!-- 专辑背景结束 -->
+    <!-- 专辑作者开始 -->
+    <view class="album_author">
+      <view class="album_author_info">
+        <image mode="widthFix" :src="album.user.avatar"></image>
+        <view class="author_name">{{album.user.name }}</view>
+      </view>
+      <view class="album_author_desc">
+        <text>{{album.desc}}</text>
+      </view>
+    </view>
+    <!-- 专辑作者结束 -->
+    <!-- 列表开始 -->
+    <view class="album_list">
+      <view class="album_item"
+      v-for="item in wallpaper"
+      :key="item.id"
+      >
+        <image mode="widthFix" :src="item.thumb+item.rule.replace('$<Height>',360)"></image>
+      </view>
+    </view>
+    <!-- 列表结束 -->
   </view>
 </template>
 
@@ -24,14 +45,28 @@ export default {
       },
       id:-1,
       album:{},
-      wallpaper:[]
+      wallpaper:[],
+      hasMore:true
     }
   },
   onLoad(options){
-    console.log(options);
-    //this.id=options.id;
-    this.id="60c84c0ae7bce753543a6a4e",
+    this.id=options.id;
     this.getList();
+  },
+  //页面触底 = 上拉加载下一页
+  onReachBottom(){
+    //console.log("123");
+    if(this.hasMore){
+      this.params.first=0;
+      this.params.skip+=this.params.limit;
+      this.getList();
+    }else{
+      uni.showToast({
+        title:"没有更多数据了",
+        icon:"none"
+      })
+    }
+
   },
   methods:{
     getList(){
@@ -40,9 +75,19 @@ export default {
         data:this.params
       })
       .then(result=>{
-        console.log(result);
-        this.album=result.res.album
-        this.wallpaper=result.res.wallpaper
+        console.log(result)
+        if(Object.keys(this.album).length===0){
+          this.album=result.res.album;
+        }
+        if(result.res.wallpaper===0){
+          this.hasMore=false;
+          uni.showToast({
+            title:"没有更多数据了",
+            icon:"none"
+        })
+          return;
+        }
+        this.wallpaper=[...this.wallpaper,...result.res.wallpaper];
       })
     }
   }
@@ -58,7 +103,7 @@ export default {
 
   .album_info {
     position: absolute;
-    width: 1010%;
+    width: 100%;
     left: 0;
     bottom:0;
     display: flex;
@@ -80,6 +125,36 @@ export default {
       justify-content: center;
       align-items: center;
       border-radius: 10rpx;
+    }
+  }
+}
+.album_author {
+  padding: 10px;
+  .album_author_info {
+    padding: 10rpx 0;
+    display: flex;
+    image {
+      width:50rpx;
+    }
+
+    .author_name {
+      margin-left:15rpx;
+      color:#000
+    }
+  }
+
+  .album_author_desc {
+
+  }
+}
+.album_list{
+  display: flex;
+  flex-wrap: wrap;
+  .album_item{
+    width: 33.33%;
+    border: 3rpx solid #fff;
+    image{
+
     }
   }
 }
