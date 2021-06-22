@@ -63,8 +63,7 @@ export default {
   components:{
     goDetail
   },
-  data(
-    GoDetail){
+  data(){
     return{
       //推荐列表
       recommends:[],
