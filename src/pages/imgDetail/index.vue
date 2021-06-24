@@ -41,7 +41,7 @@
         </view>
       </view>
     </view>
-    <!-- 热评 -->
+    <!-- 最热评论 comment hot -->
     <view class="comment hot" v-if="hot.length">
       <view class="comment_title">
         <text class="iconfont iconhot1"></text>
@@ -79,7 +79,7 @@
         </view>
       </view>
     </view>
-    <!-- 新评 -->
+    <!-- 最新评论 comment new -->
     <view class="comment new" v-if="comment.length">
       <view class="comment_title">
         <text class="iconfont iconpinglun"></text>
@@ -117,7 +117,11 @@
         </view>
       </view>
     </view>
-
+    <!-- 下载开始-->
+    <view class="download">
+      <view class="download_btn" @click="handleDownload">下载图片</view>
+    </view>
+    <!-- 下载结束 -->
   </view>
 </template>
 
@@ -131,10 +135,15 @@ export default {
   },
   data() {
     return {
+      //图片信息对象包含用户头像
       imgDetail: {},
+      //专辑数据数组
       album: [],
+      //最热评论
       hot: [],
+      //最新评论
       comment: [],
+      //图片的索引
       imgIndex: 0,
     };
   },
@@ -144,11 +153,13 @@ export default {
     this.getData();
   },
   methods: {
-    // 给页面赋值
+    // 给当前页面赋值
     getData() {
       const { imgList } = getApp().globalData;
       this.imgDetail = imgList[this.imgIndex];
+      //xxx年前的数据
       this.imgDetail.cnTime = moment(this.imgDetail.atime * 1000).fromNow();
+      //获取图片详情的ID
       this.getComments(this.imgDetail.id);
     },
     async getComments(id) {
@@ -167,17 +178,37 @@ export default {
       /**
        * 1. 左滑 imgIndex++
        * 2. 右划 imgIndex--
+       * 3. 判断数组是否越界的问题
+       * 4. 左滑 e.direction==="left"&&this.imgIndex<imgList.length-1
+       * 4. 右滑 e.direction==="right"&&this.imgIndex>0
        */
-      console.log(e)
+      console.log(e);
+      const { imgList } = getApp().globalData;
+      if(e.direction==="left"&&this.imgIndex<imgList.length-1){
+        //满足条件后可以左滑
+        this.imgIndex++;
+        this.getData();
+      }else if(e.direction==="right"&&this.imgIndex>0){
+        //优化加载上一页
+        this.imgIndex--;
+        this.getData();
+      }else{
+        uni.showToast({
+          title:"没有数据了",
+          icon:"none"
+        })
+      }
     },
     // 下载图片
     async handleDownload() {
-      uni.showLoading({ title: '下载中' });
+     
+      await uni.showLoading({ title: '下载中' });
       // 1. 远程文件下载到小程序内存中 tempFilePath
       const res1 = await uni.downloadFile({ url: this.imgDetail.img });
       const { tempFilePath } = res1[1];
       // 2. 将图片从内存中下载到本地
       const res2 = await uni.saveImageToPhotosAlbum({ filePath: tempFilePath });
+      // 3。提示用户下载成功
       uni.hideLoading();
       await uni.showToast({ title: '下载成功' });
     },
