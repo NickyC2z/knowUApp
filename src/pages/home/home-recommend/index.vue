@@ -1,220 +1,191 @@
 <template>
-  <scroll-view @scrolltolower="handleToLower" class="recommend_view" scroll-y v-if="recommends.length>0">
-    <!-- 推荐开始 -->
+  <scroll-view
+    @scrolltolower="handleToLower"
+    class="recommend_view"
+    scroll-y
+    v-if="recommends.length > 0"
+  >
+    <!-- 推荐 -->
     <view class="recommend_wrap">
-      <navigator class="recommend_item"
-      v-for="item in recommends"
-      :key="item.id"
-      :url="`/pages/album/index?id=${item.target}`"
+      <navigator
+        class="recommend_item"
+        v-for="item in recommends"
+        :key="item.id"
+        :url="`/pages/album/index?id=${item.target}`"
       >
-      <image mode="widthFix" :src="item.thumb"></image>
+        <image mode="widthFix" :src="item.thumb"></image>
       </navigator>
     </view>
-    <!-- 推荐结束 -->
-    <!-- 月份开始 -->
-    <view class="monthes_wrap">
-      <view class="monthes_title">
-        <view class="monthes_title_info">
-          <view class="monthes_info">
-            <text>{{monthes.DD}}/</text>
-            {{monthes.MM}} 月
+    <!-- 月份 -->
+    <view class="months_wrap">
+      <view class="months_title">
+        <view class="months_title_info">
+          <view class="months_info">
+            <text> {{ months.DD }} / </text>
+            {{ months.MM }} 月
           </view>
-          <view class="monthes_text">{{monthes.title}}</view>
+          <view class="months_text">{{ months.title }}</view>
         </view>
-        <view class="monthes_title_more">更多></view>
+        <view class="months_title_more">更多 ></view>
       </view>
-      <view class="monthes_content">
-        <view class="monthes_item"
-        v-for="(item,index) in monthes.items"
-        :key="item.id"
+      <view class="months_content">
+        <view
+          class="months_item"
+          v-for="(item, index) in months.items"
+          :key="item.id"
         >
-        <go-detail :list="monthes.items" :index="index">
-          <image mode="aspectFill" :src="item.thumb+item.rule.replace('$<Height>',360)" ></image>
-        </go-detail>
-        </view>
-      </view>
-    </view>
-    <!-- 月份结束 -->
-    <!-- 热门开始 -->
-    <view class="hots_wrap">
-      <view class="hots_title">
-        <text>热门</text>
-      </view>
-      <view class="hots_content">
-        <view 
-        class="hot_item"
-        v-for="(item,index) in hots"
-        :key="item.id"
-        >
-          <go-detail :list="hots" :index="index">
-           <image mode="widthFix" :src="item.thumb"></image>
+          <go-detail :list="months.items" :index="index">
+            <image
+              mode="aspectFill"
+              :src="item.thumb + item.rule.replace('$<Height>', 360)"
+            ></image>
           </go-detail>
         </view>
       </view>
     </view>
-    <!-- 热门结束 -->
+    <!-- 热门 -->
+    <view class="hots_wrap">
+      <view class="hots_title">
+        <text> 热门 </text>
+      </view>
+      <view class="hots_content">
+        <view class="hot_item" v-for="(item, index) in hots" :key="item.id">
+          <go-detail :list="hots" :index="index">
+            <image mode="widthFix" :src="item.thumb"></image>
+          </go-detail>
+        </view>
+      </view>
+    </view>
   </scroll-view>
 </template>
 
 <script>
-import goDetail from"@/components/goDetail";
-import moment from "moment";
+import moment from 'moment';
+import goDetail from '@/components/goDetail';
 export default {
-  components:{
-    goDetail
+  components: {
+    goDetail,
   },
-  data(){
-    return{
-      //推荐列表
-      recommends:[],
-      //月份
-      monthes:{
+  data() {
+    return {
+      // 推荐列表
+      recommends: [],
+      months: {},
+      hots: [],
+      params: {
+        limit: 30,
+        order: 'hot',
+        skip: 0,
       },
-      //热门
-      hots:[],
-      //请求参数
-      params:{
-        //获取几条数据
-        limit:30,
-        //关键字
-        order:"hot",
-        //要调过几条
-        skip:0 
-      },
-      //是否还有下一页
-      hasMore:true
-    }
+      // 是否还有下一页
+      hasMore: true,
+    };
   },
-  mounted(){
+  mounted() {
     this.getList();
   },
-  methods:{
-    //获取接口的数据
-    getList(){
-      this.request({
-        
-      url:"http://157.122.54.189:9088/image/v3/homepage/vertical",
-      data:this.params,
-    })
-    .then(result=>{
-      console.log(result);
-      //判断还有没有下一页数据
-      if(result.res.vertical.length === 0){
-        this.hasMore=false;
+  methods: {
+    async getList() {
+      const { res } = await this.request({
+        url: 'http://157.122.54.189:9088/image/v3/homepage/vertical',
+        data: this.params,
+      });
+      // 判断还有没有下一页数据
+      if (res.vertical.length === 0) {
+        this.hasMore = false;
         uni.showToast({
-            title:"没有更多数据了",
-            icon:"none"
-          })
+          title: '没有数据了',
+          icon: 'none',
+        });
         return;
       }
-      if(this.recommends.length === 0){
-        //第一次发送请求
-        //推荐模块
-        this.recommends=result.res.homepage[1].items;
-        //月份模块
-        this.monthes= result.res.homepage[2];
-        //将时间戳修改 moment.js
-        this.monthes.MM=moment(this.monthes.stime).format("MM");
-        this.monthes.DD=moment(this.monthes.stime).format("DD");
+      if (this.recommends.length === 0) {
+        this.recommends = res.homepage[1].items;
+        this.months = res.homepage[2];
+        this.months.MM = moment(this.months.stime).format('MM');
+        this.months.DD = moment(this.months.stime).format('DD');
       }
-     
-      //获取热门数据的列表
-      // 数组拼接
-      //原数组 this.hots=result.res.vertical;
-      this.hots = [...this.hots, ...result.res.vertical];
-    })
+      this.hots = [...this.hots, ...res.vertical];
     },
-    //滚动条触底事件
-    handleToLower(){
-      /* 
-      1.触发时 修改参数 skip+=limit
-      2.重新发送请求 getList()      
-      3.请求回来成功后 hots 数据的叠加
-      */
-     if(this.hasMore){
-      this.params.skip+=this.params.limit;
-      this.getList();
-     }else{
-       //弹窗提示用户
-       uni.showToast({
-         title:"没有数据了",
-         icon:"none"
-       })
-     }
-    }  
-  }
-}
+    handleToLower() {
+      if (this.hasMore) {
+        this.params.skip += this.params.limit;
+        this.getList();
+      } else {
+        // 弹窗提示
+        uni.showToast({
+          title: '没有数据了',
+          icon: 'none',
+        });
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.recommend_view{
-  //height : 屏幕的高度减去头部的高度
+.recommend_view {
   height: calc(100vh - 36px);
 }
-.recommend_wrap{
-  //flex布局
+.recommend_wrap {
   display: flex;
   flex-wrap: wrap;
-  .recommend_item{
+  .recommend_item {
     width: 50%;
-    border: 5rpx solid #fff;
+    border: 3rpx solid #fff;
   }
 }
-
-.monthes_wrap{
-  .monthes_title{
+.months_wrap {
+  .months_title {
     display: flex;
-    padding: 20rpx;
     justify-content: space-between;
-    .monthes_title_info{
+    padding: 20rpx;
+    .months_title_info {
       color: $color;
       font-size: 30rpx;
       font-weight: 600;
       display: flex;
-      .monthes_info{
-        text{
+      .months_info {
+        text {
           font-size: 36rpx;
         }
       }
-      .monthes_text{
+      .months_text {
         font-size: 34rpx;
-        color:#666;
+        color: #666;
         margin-left: 30rpx;
       }
     }
-    .monthes_title_more{
+    .months_title_more {
       font-size: 24rpx;
       color: $color;
     }
   }
-  .monthes_content{
+  .months_content {
     display: flex;
     flex-wrap: wrap;
-    .monthes_item{
+    .months_item {
       width: 33.33%;
-      border: 5px solid #fff;
+      border: 5rpx solid #fff;
     }
   }
 }
-.hots_wrap{
-  .hots_title{
+.hots_wrap {
+  .hots_title {
     padding: 20rpx;
-    text{
+    text {
       border-left: 20rpx solid $color;
-      font-size: 34rpx;
       padding-left: 20rpx;
+      font-style: 34rpx;
       font-weight: 600;
     }
   }
-  .hots_content{
+  .hots_content {
     display: flex;
     flex-wrap: wrap;
-    .hot_item{
+    .hot_item {
       width: 33.33%;
       border: 5rpx solid #fff;
-      image{
-
-      }
     }
   }
 }
